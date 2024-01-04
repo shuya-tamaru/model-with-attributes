@@ -1,40 +1,51 @@
 import "./App.css";
-import * as THREE from "three";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Stage } from "@react-three/drei";
-import { useGLTF } from "@react-three/drei";
-const material = new THREE.MeshStandardMaterial({
-  vertexColors: true,
-});
+import { Center, OrbitControls } from "@react-three/drei";
+import { Suspense } from "react";
+import CanvasSpinner from "./components/CanvasSpinner";
+import { Perf } from "r3f-perf";
+import Lights from "./components/Lights";
+import Model from "./components/Model";
+import useGetId from "./stores/useGetId";
 
 function App() {
-  const modelPath = "/model/voronoiSphere_compress.gltf";
-  const gltf2 = useGLTF(modelPath);
-  gltf2.scene.traverse((child) => {
-    if (child instanceof THREE.Mesh) {
-      child.material = material;
-    }
-  });
+  const { meshId } = useGetId((state) => state);
 
   return (
-    <>
+    <div style={{ position: "relative" }}>
       <Canvas
         style={{ width: "100vw", height: "100vh", background: "#333" }}
         camera={{
           fov: 75,
           near: 0.1,
           far: 20000,
-          position: [0, 20, 30],
+          position: [500, 500, 500],
         }}
+        shadows
+        gl={{ antialias: true }}
       >
         <OrbitControls makeDefault />
-        <directionalLight intensity={1.15} />
-        <axesHelper scale={200} />
-        <Stage intensity={0.02} environment={"city"} adjustCamera={true}>
-          <primitive object={gltf2.scene} />
-        </Stage>
+        {/* <Perf /> */}
+        <Suspense fallback={<CanvasSpinner />}>
+          <Center>
+            <Model />
+            <Lights />
+          </Center>
+        </Suspense>
       </Canvas>
-    </>
+      <div
+        style={{
+          width: `1000px`,
+          color: "#fff",
+          position: "absolute",
+          top: 10,
+          left: 10,
+          fontSize: "40px",
+        }}
+      >
+        {`idは ${meshId ? meshId : "未選択"} ですよ！`}
+      </div>
+    </div>
   );
 }
 
