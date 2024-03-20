@@ -19,10 +19,10 @@ export default function Interfaces() {
       zIndex={2}
       shadow={"md"}
       transition="all 0.3s ease-in-out"
-      transform={!visible ? "translateX(-100%)" : "none"}
+      transform={visible ? "translateX(-100%)" : "none"}
     >
       <Box
-        w="40px"
+        w="50px"
         h="30px"
         bg={"#333"}
         color={"#fff"}
@@ -30,7 +30,7 @@ export default function Interfaces() {
         cursor={"pointer"}
         position={"absolute"}
         top="20px"
-        left="-40px"
+        left="-50px"
         lineHeight={"20px"}
         borderRadius={"3px 0 0 3px "}
         borderRight={"none"}
@@ -38,9 +38,9 @@ export default function Interfaces() {
         _hover={{ opacity: 0.8 }}
         onClick={() => setVisible(!visible)}
       >
-        <Center w="100%" h="100%">
+        <Center w="100%" h="100%" p="10px">
           <Icon
-            as={!visible ? RiArrowRightDoubleLine : RiArrowLeftDoubleLine}
+            as={visible ? RiArrowRightDoubleLine : RiArrowLeftDoubleLine}
             boxSize={5}
           />
           <Icon as={FaDatabase} boxSize={4} />

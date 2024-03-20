@@ -5,7 +5,6 @@ import CanvasSpinner from "../components/CanvasSpinner";
 import { Perf } from "r3f-perf";
 import Lights from "../components/Lights";
 import Model from "../components/Model";
-import useGetId from "../stores/useGetId";
 
 export default function WebCanvas() {
   return (

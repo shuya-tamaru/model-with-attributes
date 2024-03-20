@@ -4,7 +4,7 @@ import * as THREE from "three";
 
 import { useLoadedModel } from "../hooks/useLoadedModel";
 import useFloorSelector from "../stores/useFloorSelector";
-import { floorMaterials, selectedMaterial } from "../utils/materials";
+import { selectedMaterial } from "../utils/materials";
 import usePartFilter from "../stores/usePartFilter";
 import useGetUserData from "../stores/useGetUserData";
 import { MeshUserData } from "../types/MeshUserData";
