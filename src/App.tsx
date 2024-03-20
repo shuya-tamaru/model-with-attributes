@@ -1,15 +1,16 @@
 import { Flex } from "@chakra-ui/react";
 import WebCanvas from "./components/WebCanvas";
 import Interfaces from "./components/Interfaces";
-import LeftButtons from "./components/LeftButtons";
+import { ChakraProvider } from "@chakra-ui/react";
 
 function App() {
   return (
-    <Flex margin={"0 auto"} w="100%" h="100vh" position={"relative"}>
-      {/* <LeftButtons /> */}
-      <WebCanvas />
-      <Interfaces />
-    </Flex>
+    <ChakraProvider>
+      <Flex margin={"0 auto"} w="100%" h="100vh" position={"relative"}>
+        <WebCanvas />
+        <Interfaces />
+      </Flex>
+    </ChakraProvider>
   );
 }
 
