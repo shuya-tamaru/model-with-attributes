@@ -32,3 +32,12 @@ export const floorMaterials = {
     transparent: true,
   }),
 };
+
+export const selectedMaterial = new THREE.MeshStandardMaterial({
+  color: "#CCFF00",
+  emissive: "#CCFF00",
+  emissiveIntensity: 1,
+  side: THREE.DoubleSide,
+  transparent: true,
+  opacity: 0.9,
+});

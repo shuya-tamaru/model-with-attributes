@@ -8,7 +8,6 @@ import Model from "../components/Model";
 import useGetId from "../stores/useGetId";
 
 export default function WebCanvas() {
-  const { meshId } = useGetId((state) => state);
   return (
     <Canvas
       style={{

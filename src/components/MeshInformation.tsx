@@ -1,27 +1,24 @@
 import {
   Box,
   Table,
-  Thead,
   Tbody,
-  Tfoot,
   Tr,
-  Th,
   Td,
-  TableCaption,
   TableContainer,
   Flex,
   Icon,
   Text,
+  Center,
 } from "@chakra-ui/react";
 import useGetUserData from "../stores/useGetUserData";
 import { BsDatabase } from "react-icons/bs";
+import { LuMousePointerClick } from "react-icons/lu";
 
 export default function MeshInformation() {
   const information = useGetUserData((state) => state.information);
   const floor = information && information.floor ? information.floor : "";
   const part = information && information.part ? information.part : "";
 
-  console.log(information);
   return (
     <Box mt="40px">
       <Flex>
@@ -60,6 +57,12 @@ export default function MeshInformation() {
           </Tbody>
         </Table>
       </TableContainer>
+      <Center mt="5px" fontSize="12px" w="100%" justifyContent={"start"}>
+        <Icon as={LuMousePointerClick} boxSize={5} />
+        <Text ml="5px" fontWeight={"semibold"}>
+          {"Meshをダブルクリックでデータ取得"}
+        </Text>
+      </Center>
     </Box>
   );
 }

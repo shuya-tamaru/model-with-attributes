@@ -1,10 +1,10 @@
 import { useThree } from "@react-three/fiber";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import * as THREE from "three";
 
 import { useLoadedModel } from "../hooks/useLoadedModel";
 import useFloorSelector from "../stores/useFloorSelector";
-import { floorMaterials } from "../utils/materials";
+import { floorMaterials, selectedMaterial } from "../utils/materials";
 import usePartFilter from "../stores/usePartFilter";
 import useGetUserData from "../stores/useGetUserData";
 import { MeshUserData } from "../types/MeshUserData";
@@ -16,19 +16,46 @@ export default function Model() {
   const { model, meshIndex, defaultMaterials } = useLoadedModel(modelPath);
   const floor = useFloorSelector((state) => state.floor);
   const part = usePartFilter((state) => state.part);
+  const [beforeSelectedMeshId, setBeforeSelectedMeshId] = useState<
+    string | null
+  >(null);
 
   const getRayCastPosition = useCallback(
     (e: MouseEvent) => {
-      const intersectObjects = raycaster.intersectObjects(model.scene.children);
+      const mesh = model.scene.getObjectByProperty(
+        "uuid",
+        beforeSelectedMeshId
+      ) as THREE.Mesh;
+      if (mesh) {
+        const materialId = mesh.userData.defaultMaterialId;
+        const material = defaultMaterials.find((material) => {
+          return material.uuid === materialId;
+        });
+
+        if (material) {
+          mesh.material = material;
+        }
+      }
+      const visibleMeshes = Array.from(model.scene.children).filter((child) => {
+        return child.visible;
+      });
+      const intersectObjects = raycaster.intersectObjects(visibleMeshes);
       const firstIntersectObject = intersectObjects[0];
-      if (firstIntersectObject) {
+      if (
+        firstIntersectObject &&
+        firstIntersectObject.object instanceof THREE.Mesh
+      ) {
         const userData = firstIntersectObject.object.userData as MeshUserData;
         if (userData) {
+          firstIntersectObject.object.material = selectedMaterial;
+          setBeforeSelectedMeshId(firstIntersectObject.object.uuid);
           setInformation(userData);
+        } else {
+          setBeforeSelectedMeshId(null);
         }
       }
     },
-    [meshIndex]
+    [meshIndex, defaultMaterials]
   );
 
   useEffect(() => {
@@ -82,8 +109,8 @@ export default function Model() {
   }, [part, meshIndex]);
 
   useEffect(() => {
-    window.addEventListener("mousedown", getRayCastPosition);
-    return () => window.removeEventListener("mousedown", getRayCastPosition);
+    window.addEventListener("dblclick", getRayCastPosition);
+    return () => window.removeEventListener("dblclick", getRayCastPosition);
   }, [getRayCastPosition]);
 
   return <primitive object={model.scene} />;
