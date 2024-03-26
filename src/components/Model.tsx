@@ -1,6 +1,7 @@
 import { useThree } from "@react-three/fiber";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { TransformControls } from "@react-three/drei";
 
 import { useLoadedModel } from "../hooks/useLoadedModel";
 import useFloorSelector from "../stores/useFloorSelector";
@@ -8,14 +9,16 @@ import { selectedMaterial } from "../utils/materials";
 import usePartFilter from "../stores/usePartFilter";
 import useGetUserData from "../stores/useGetUserData";
 import { MeshUserData } from "../types/MeshUserData";
+import useClippingPosition from "../stores/useClippingPosition";
 
 export default function Model() {
+  const ref = useRef<THREE.Mesh>(null);
   const setInformation = useGetUserData((state) => state.setInformation);
   const { raycaster } = useThree();
-  const modelPath = "/model/userAttributes7-draco.glb";
-  const { model, meshIndex, defaultMaterials } = useLoadedModel(modelPath);
+  const { model, meshIndex, defaultMaterials } = useLoadedModel();
   const floor = useFloorSelector((state) => state.floor);
   const part = usePartFilter((state) => state.part);
+  const { positionY, setPositionY } = useClippingPosition((state) => state);
   const [beforeSelectedMeshId, setBeforeSelectedMeshId] = useState<
     string | null
   >(null);
@@ -26,6 +29,7 @@ export default function Model() {
         "uuid",
         beforeSelectedMeshId
       ) as THREE.Mesh;
+
       if (mesh) {
         const materialId = mesh.userData.defaultMaterialId;
         const material = defaultMaterials.find((material) => {
@@ -41,6 +45,7 @@ export default function Model() {
       });
       const intersectObjects = raycaster.intersectObjects(visibleMeshes);
       const firstIntersectObject = intersectObjects[0];
+
       if (
         firstIntersectObject &&
         firstIntersectObject.object instanceof THREE.Mesh
@@ -55,7 +60,7 @@ export default function Model() {
         }
       }
     },
-    [meshIndex, defaultMaterials]
+    [meshIndex, defaultMaterials, model, beforeSelectedMeshId]
   );
 
   useEffect(() => {
@@ -113,5 +118,29 @@ export default function Model() {
     return () => window.removeEventListener("dblclick", getRayCastPosition);
   }, [getRayCastPosition]);
 
-  return <primitive object={model.scene} />;
+  return (
+    <>
+      {ref.current && (
+        <TransformControls
+          mode="translate"
+          object={ref.current}
+          showY
+          showX={false}
+          showZ={false}
+          onChange={() => {
+            if (ref.current) setPositionY(ref.current.position.y);
+          }}
+        />
+      )}
+      <mesh
+        rotation={[Math.PI / 2, 0, 0]}
+        position={[-10, positionY, -10]}
+        ref={ref}
+      >
+        <planeGeometry args={[30, 30]} />
+        <meshBasicMaterial color="green" side={THREE.DoubleSide} wireframe />
+      </mesh>
+      <primitive object={model.scene} />
+    </>
+  );
 }
