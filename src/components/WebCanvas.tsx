@@ -19,7 +19,7 @@ export default function WebCanvas() {
         fov: 75,
         near: 0.1,
         far: 20000,
-        position: [20, 20, -20],
+        position: [30, 40, -40],
       }}
       shadows
       gl={{ antialias: true }}
@@ -27,10 +27,8 @@ export default function WebCanvas() {
       <OrbitControls makeDefault />
       {/* <Perf /> */}
       <Suspense fallback={<CanvasSpinner />}>
-        <Center>
-          <Model />
-          <Lights />
-        </Center>
+        <Model />
+        <Lights />
       </Suspense>
     </Canvas>
   );
