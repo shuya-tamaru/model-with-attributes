@@ -19,7 +19,7 @@ export default function WebCanvas() {
         fov: 75,
         near: 0.1,
         far: 20000,
-        position: [30, 40, -40],
+        position: [38.8, 31.5, -45.6],
       }}
       shadows
       gl={{ antialias: true }}

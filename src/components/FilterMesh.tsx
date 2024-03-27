@@ -31,7 +31,7 @@ export default function FilterMesh() {
               <Text fontWeight={"semibold"}>{key.toUpperCase()}</Text>
             </Center>
             <Select
-              placeholder={`全ての${key}`}
+              placeholder={`All_${key.toUpperCase()}`}
               w="250px"
               flex={1.0}
               bg="#fff"

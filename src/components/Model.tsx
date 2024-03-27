@@ -25,6 +25,7 @@ export default function Model() {
     string | null
   >(null);
   const currentFilter = useFilter((state) => state.currentFilter);
+  const { camera } = useThree();
 
   const { position } = useSpring({ position: [-10, positionY, -10] });
   const getRayCastPosition = useCallback(
@@ -156,11 +157,6 @@ export default function Model() {
           }}
         />
       )}
-      {/* <mesh
-        rotation={[Math.PI / 2, 0, 0]}
-        position={[-10, positionY, -10]}
-        ref={ref}
-      > */}
       <animated.mesh
         rotation={[Math.PI / 2, 0, 0]}
         position={position as any}
