@@ -2,6 +2,7 @@ import { useThree } from "@react-three/fiber";
 import { useCallback, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { TransformControls } from "@react-three/drei";
+import { useSpring, animated } from "@react-spring/three";
 
 import { useLoadedModel } from "../hooks/useLoadedModel";
 import useFloorSelector from "../stores/useFloorSelector";
@@ -10,6 +11,7 @@ import usePartFilter from "../stores/usePartFilter";
 import useGetUserData from "../stores/useGetUserData";
 import { MeshUserData } from "../types/MeshUserData";
 import useClippingPosition from "../stores/useClippingPosition";
+import useFilter from "../stores/useFilter";
 
 export default function Model() {
   const ref = useRef<THREE.Mesh>(null);
@@ -22,7 +24,9 @@ export default function Model() {
   const [beforeSelectedMeshId, setBeforeSelectedMeshId] = useState<
     string | null
   >(null);
+  const currentFilter = useFilter((state) => state.currentFilter);
 
+  const { position } = useSpring({ position: [-10, positionY, -10] });
   const getRayCastPosition = useCallback(
     (e: MouseEvent) => {
       const mesh = model.scene.getObjectByProperty(
@@ -62,6 +66,26 @@ export default function Model() {
     },
     [meshIndex, defaultMaterials, model, beforeSelectedMeshId]
   );
+
+  useEffect(() => {
+    const filterKeys = Object.keys(currentFilter);
+    meshIndex.forEach((value, key) => {
+      const mesh = model.scene.getObjectByProperty("uuid", key) as THREE.Mesh;
+      const userData = mesh.userData as MeshUserData;
+      let isVisible = true;
+      filterKeys.forEach((filterKey: string) => {
+        if (currentFilter[filterKey] === "") {
+          return;
+        } else if (
+          !userData[filterKey] ||
+          userData[filterKey] !== currentFilter[filterKey]
+        ) {
+          isVisible = false;
+        }
+      });
+      mesh.visible = isVisible;
+    });
+  }, [currentFilter]);
 
   useEffect(() => {
     if (floor) {
@@ -132,14 +156,19 @@ export default function Model() {
           }}
         />
       )}
-      <mesh
+      {/* <mesh
         rotation={[Math.PI / 2, 0, 0]}
         position={[-10, positionY, -10]}
+        ref={ref}
+      > */}
+      <animated.mesh
+        rotation={[Math.PI / 2, 0, 0]}
+        position={position as any}
         ref={ref}
       >
         <planeGeometry args={[30, 30]} />
         <meshBasicMaterial color="green" side={THREE.DoubleSide} wireframe />
-      </mesh>
+      </animated.mesh>
       <primitive object={model.scene} />
     </>
   );

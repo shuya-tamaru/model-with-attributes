@@ -1,6 +1,4 @@
 export interface MeshUserData {
-  floor?: string;
-  part?: string;
-  Area?: string;
+  [key: string]: string;
   defaultMaterialId: string;
 }

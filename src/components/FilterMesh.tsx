@@ -1,71 +1,56 @@
 import { Center, Flex, Icon, Select, Text } from "@chakra-ui/react";
 import { RiFilter3Line } from "react-icons/ri";
-import useFloorSelector from "../stores/useFloorSelector";
-import usePartFilter from "../stores/usePartFilter";
+import useFilter from "../stores/useFilter";
 
 export default function FilterMesh() {
-  const setFloor = useFloorSelector((state) => state.setFloor);
-  const setPart = usePartFilter((state) => state.setPart);
+  const filters = useFilter((state) => state.filters);
+  const { currentFilter, setCurrentFilter } = useFilter((state) => state);
 
-  const handleFloorSelector = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedFloor = e.target.value;
-    setFloor(selectedFloor ? selectedFloor : null);
+  const handleFilterSelector = (
+    e: React.ChangeEvent<HTMLSelectElement>,
+    key: string
+  ) => {
+    const value = e.target.value;
+    setCurrentFilter({ ...currentFilter, [key]: value });
   };
 
-  const handlePartSelector = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedPart = e.target.value;
-    setPart(selectedPart ? selectedPart : null);
-  };
   return (
     <>
       <Flex>
         <Icon as={RiFilter3Line} boxSize={5} />
         <Text ml="10px" fontWeight={"semibold"} fontSize={"14px"}>
-          フィルター
+          Filters
         </Text>
       </Flex>
-      <Flex w="100%" mt="5px">
-        <Center flex={0.2} justifyContent={"start"}>
-          <Text fontWeight={"semibold"}>階</Text>
-        </Center>
-        <Select
-          placeholder="全ての階"
-          w="250px"
-          flex={1.0}
-          bg="#fff"
-          fontSize={"14px"}
-          borderRadius={2}
-          borderColor={"#ccc"}
-          onChange={handleFloorSelector}
-        >
-          <option value="1F">1F</option>
-          <option value="2F">2F</option>
-          <option value="3F">3F</option>
-          <option value="4F">4F</option>
-          <option value="RF">RF</option>
-          <option value="外構">外構</option>
-        </Select>
-      </Flex>
-      <Flex w="100%" mt="5px">
-        <Center flex={0.2} justifyContent={"start"}>
-          <Text fontWeight={"semibold"}>部位</Text>
-        </Center>
-        <Select
-          placeholder="全ての部位"
-          w="250px"
-          bg="#fff"
-          flex={1.0}
-          fontSize={"14px"}
-          borderRadius={2}
-          borderColor={"#ccc"}
-          onChange={handlePartSelector}
-        >
-          <option value="外壁">外壁</option>
-          <option value="内壁">内壁</option>
-          <option value="床">床</option>
-          <option value="天井">天井</option>
-        </Select>
-      </Flex>
+      {filters.map((filter, index) => {
+        const key: string = Object.keys(filter)[0];
+        const values: string[] = Object.values(filter)[0];
+        return (
+          <Flex w="100%" mt="5px" key={index}>
+            <Center flex={0.2} justifyContent={"start"} fontSize={"14px"}>
+              <Text fontWeight={"semibold"}>{key.toUpperCase()}</Text>
+            </Center>
+            <Select
+              placeholder={`全ての${key}`}
+              w="250px"
+              flex={1.0}
+              bg="#fff"
+              fontSize={"14px"}
+              borderRadius={2}
+              borderColor={"#ccc"}
+              onChange={(e) => handleFilterSelector(e, key)}
+            >
+              {values.map((value, index) => {
+                return (
+                  <option key={index + "val"} value={value}>
+                    {value}
+                  </option>
+                );
+              })}
+            </Select>
+          </Flex>
+        );
+      })}
     </>
   );
 }
