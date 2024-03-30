@@ -25,7 +25,6 @@ export default function Model() {
     string | null
   >(null);
   const currentFilter = useFilter((state) => state.currentFilter);
-  const { camera } = useThree();
 
   const { position } = useSpring({ position: [-10, positionY, -10] });
   const getRayCastPosition = useCallback(
